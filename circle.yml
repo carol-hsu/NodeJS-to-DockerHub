@@ -1,8 +1,14 @@
 # circle.yml
 machine:
-  node:
-    version: 0.10
+  services:
+	- docker
+
+dependencies:
+  override:
+    - docker build -t hello-ci-workflow .
 
 test:
   override:
     - ./node_modules/.bin/mocha
+	- docker run -d -p 8080:8080 hello-ci-workflow; sleep 10
+    - curl --retry 10 --retry-delay 5 -v http://localhost:8080
